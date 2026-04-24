@@ -1,0 +1,69 @@
+{
+  "score": 2.0,
+  "tests": [
+    {
+      "max_score": 1.0,
+      "name": "reward_model",
+      "output": "pair_accuracy=0.8359 threshold=0.7400",
+      "score": 1.0,
+      "status": "passed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "dpo",
+      "output": "win_rate=0.6122 threshold=0.6800 usable=49",
+      "score": 0.0,
+      "status": "failed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "ipo",
+      "output": "win_rate=0.7143 threshold=0.5500 usable=28",
+      "score": 1.0,
+      "status": "passed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "aot",
+      "output": "win_rate=0.6818 threshold=0.7200 usable=44",
+      "score": 0.0,
+      "status": "failed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "grpo",
+      "output": "win_rate=0.4800 threshold=0.6800 usable=25",
+      "score": 0.0,
+      "status": "failed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "drgrpo",
+      "output": "win_rate=0.0500 threshold=0.6400 usable=40",
+      "score": 0.0,
+      "status": "failed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "gspo",
+      "output": "win_rate=0.5556 threshold=0.6000 usable=36",
+      "score": 0.0,
+      "status": "failed",
+      "visibility": "visible"
+    },
+    {
+      "max_score": 1.0,
+      "name": "part2_best",
+      "output": "Missing part2/offline_best.jsonl and part2/online_best.jsonl",
+      "score": 0.0,
+      "status": "failed",
+      "visibility": "visible"
+    }
+  ]
+}

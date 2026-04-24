@@ -1,0 +1,65 @@
+from __future__ import annotations
+
+import torch
+import torch.nn.functional as F
+
+
+def compute_per_token_logprobs(
+    model: torch.nn.Module,
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    *,
+    enable_grad: bool = True,
+) -> torch.Tensor:
+    """Returns log p(x_t | x_<t) for t in [1, L-1]. Shape: [B, L-1]."""
+    with torch.set_grad_enabled(enable_grad):
+        logits = model(input_ids=input_ids, attention_mask=attention_mask, use_cache=False).logits
+        shift_logits = logits[:, :-1, :].contiguous()
+        shift_labels = input_ids[:, 1:].contiguous()
+        B, T, V = shift_logits.shape
+        log_probs = -F.cross_entropy(shift_logits.view(B * T, V), shift_labels.view(B * T), reduction="none")
+        return log_probs.view(B, T)
+
+
+def build_completion_mask(
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    prompt_input_len: int,
+    pad_token_id: int,
+) -> torch.Tensor:
+    """Mask over per-token positions [B, L-1], selecting completion tokens only."""
+    del pad_token_id
+    B, L = input_ids.shape
+    positions = torch.arange(L - 1, device=input_ids.device).unsqueeze(0).expand(B, -1)
+    comp_mask = (positions >= prompt_input_len - 1).float()
+    attn_mask = attention_mask[:, 1:].float()
+    return comp_mask * attn_mask
+
+
+def masked_sum(x: torch.Tensor, mask: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
+    return (x * mask).sum(dim=1) / (mask.sum(dim=1) + eps)
+
+
+def masked_mean(x: torch.Tensor, mask: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
+    return (x * mask).sum() / (mask.sum() + eps)
+
+
+def masked_mean_per_row(x: torch.Tensor, mask: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
+    return (x * mask).sum(dim=1) / (mask.sum(dim=1) + eps)
+
+
+def approx_kl_from_logprobs(
+    new_logprobs: torch.Tensor,
+    ref_logprobs: torch.Tensor,
+    mask: torch.Tensor,
+    eps: float = 1e-8,
+    log_ratio_clip: float = 20.0,
+) -> torch.Tensor:
+    """Positive KL proxy from sampled actions.
+
+    Uses estimator: exp(delta) - delta - 1 where delta = log p_ref(a) - log p_new(a).
+    """
+    del eps, log_ratio_clip
+    delta = ref_logprobs - new_logprobs
+    kl_proxy = torch.exp(delta) - delta - 1.0
+    return masked_mean(kl_proxy, mask)
