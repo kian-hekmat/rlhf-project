@@ -53,8 +53,8 @@ class RewardModelConfig:
     warmup_steps: int = 100
     max_grad_norm: float = 1.0
 
-    max_prompt_tokens: int = 512
-    max_response_tokens: int = 256
+    max_prompt_tokens: int = 700
+    max_response_tokens: int = 512
 
     train_limit: int = 0
     eval_limit: int = 512
@@ -155,8 +155,15 @@ def save_checkpoint(model: torch.nn.Module, cfg: RewardModelConfig, step: int) -
 
 
 def _compute_pair_metrics(chosen_scores: torch.Tensor, rejected_scores: torch.Tensor) -> Dict[str, float]:
+    # TODO(student): implement the Bradley-Terry reward-model objective.
+    # `chosen_scores` and `rejected_scores` are scalar rewards for the preferred and dispreferred
+    # responses in the batch. Compute:
+    #   1. the per-example margin,
+    #   2. the mean negative log-sigmoid loss,
+    #   3. summary metrics such as pair accuracy and mean margin.
     margins = chosen_scores - rejected_scores
     loss = -F.logsigmoid(margins).mean()
+    
     return {
         "loss_tensor": loss,
         "reward_model/loss": float(loss.detach().item()),

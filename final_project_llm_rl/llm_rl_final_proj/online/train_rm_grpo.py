@@ -13,6 +13,8 @@ import torch
 
 from llm_rl_final_proj.data.ultrafeedback import GenerationExample, build_generation_examples, dataset_overview
 from llm_rl_final_proj.models.load import (
+    PolicyModel,
+    RewardModel,
     load_lora_policy_model_and_tokenizer,
     load_reward_model_and_tokenizer,
 )
@@ -75,7 +77,7 @@ class OnlineRMGRPOConfig:
     adv_clip: float = 5.0
 
     max_prompt_tokens: int = 700
-    max_response_tokens: int = 256
+    max_response_tokens: int = 512
     train_limit: int = 0
     eval_limit: int = 64
     reward_batch_size: int = 16
@@ -207,6 +209,10 @@ def _compute_group_advantages(
     *,
     divide_by_std: bool,
 ) -> torch.Tensor:
+
+    # TODO(student): compute one scalar advantage per sampled completion by grouping rewards
+    # into prompt-wise batches of size `group_size`, subtracting the group mean, and optionally
+    # dividing by the group standard deviation when `divide_by_std=True`.
     N = rewards.shape[0]
     rewards_grouped = rewards.view(-1, group_size)
     group_mean = rewards_grouped.mean(dim=1, keepdim=True)
@@ -238,6 +244,8 @@ def _build_online_algo(cfg: OnlineRMGRPOConfig):
 
 
 def _algo_divides_advantages_by_std(algo: str) -> bool:
+    # TODO(student): return True for the algorithms that use group-standard-deviation
+    # normalization and False for the algorithms that intentionally avoid it.
     if algo == "dr_grpo":
         return False
     return True
@@ -301,9 +309,9 @@ def save_checkpoint(model: torch.nn.Module, cfg: OnlineRMGRPOConfig, step: int) 
 @torch.no_grad()
 def evaluate_policy_with_reward_model(
     *,
-    policy_model: torch.nn.Module,
+    policy_model: PolicyModel,
     policy_tokenizer,
-    reward_model: torch.nn.Module,
+    reward_model: RewardModel,
     reward_tokenizer,
     examples: Sequence[GenerationExample],
     device: torch.device,

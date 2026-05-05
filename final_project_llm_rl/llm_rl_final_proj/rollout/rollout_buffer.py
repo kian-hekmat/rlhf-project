@@ -40,6 +40,8 @@ def iter_minibatches(
     generator: Optional[torch.Generator] = None,
     device: Optional[torch.device] = None,
 ) -> Iterator[RolloutBatch]:
+    # TODO(student): iterate over the rollout in minibatches, optionally shuffling the row indices,
+    # and yield RolloutBatch objects containing the selected subset.
     N = batch.input_ids.shape[0]
     if shuffle:
         if generator is not None:

@@ -1,5 +1,5 @@
 {
-  "score": 2.0,
+  "score": 6.0,
   "tests": [
     {
       "max_score": 1.0,
@@ -12,15 +12,15 @@
     {
       "max_score": 1.0,
       "name": "dpo",
-      "output": "win_rate=0.6122 threshold=0.6800 usable=49",
-      "score": 0.0,
-      "status": "failed",
+      "output": "win_rate=0.7209 threshold=0.6500 usable=43 errors=5 first_error=RuntimeError: HTTP 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the doc",
+      "score": 1.0,
+      "status": "passed",
       "visibility": "visible"
     },
     {
       "max_score": 1.0,
       "name": "ipo",
-      "output": "win_rate=0.7143 threshold=0.5500 usable=28",
+      "output": "win_rate=0.6667 threshold=0.6000 usable=27 errors=5 first_error=RuntimeError: HTTP 429: {\n  \"error\": {\n    \"message\": \"Rate limit reached for gpt-5.4 in organization org-Pu0GW7fdWYZNHctjmY5YryE0 on tokens per min (TPM): Limit 500000, Used 49932",
       "score": 1.0,
       "status": "passed",
       "visibility": "visible"
@@ -28,7 +28,7 @@
     {
       "max_score": 1.0,
       "name": "aot",
-      "output": "win_rate=0.6818 threshold=0.7200 usable=44",
+      "output": "win_rate=0.5641 threshold=0.6500 usable=39 errors=5 first_error=RuntimeError: HTTP 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the doc",
       "score": 0.0,
       "status": "failed",
       "visibility": "visible"
@@ -36,25 +36,25 @@
     {
       "max_score": 1.0,
       "name": "grpo",
-      "output": "win_rate=0.4800 threshold=0.6800 usable=25",
-      "score": 0.0,
-      "status": "failed",
+      "output": "win_rate=0.6579 threshold=0.6000 usable=38 errors=5 first_error=RuntimeError: HTTP 429: {\n  \"error\": {\n    \"message\": \"Rate limit reached for gpt-5.4 in organization org-Pu0GW7fdWYZNHctjmY5YryE0 on tokens per min (TPM): Limit 500000, Used 50000",
+      "score": 1.0,
+      "status": "passed",
       "visibility": "visible"
     },
     {
       "max_score": 1.0,
       "name": "drgrpo",
-      "output": "win_rate=0.0500 threshold=0.6400 usable=40",
-      "score": 0.0,
-      "status": "failed",
+      "output": "win_rate=0.6818 threshold=0.6000 usable=44 errors=1 first_error=RuntimeError: HTTP 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the doc",
+      "score": 1.0,
+      "status": "passed",
       "visibility": "visible"
     },
     {
       "max_score": 1.0,
       "name": "gspo",
-      "output": "win_rate=0.5556 threshold=0.6000 usable=36",
-      "score": 0.0,
-      "status": "failed",
+      "output": "win_rate=0.6939 threshold=0.6000 usable=49 errors=2 first_error=RuntimeError: HTTP 429: {\n  \"error\": {\n    \"message\": \"Rate limit reached for gpt-5.4 in organization org-Pu0GW7fdWYZNHctjmY5YryE0 on tokens per min (TPM): Limit 500000, Used 49955",
+      "score": 1.0,
+      "status": "passed",
       "visibility": "visible"
     },
     {

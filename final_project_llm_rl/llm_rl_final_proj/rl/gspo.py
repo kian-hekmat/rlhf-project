@@ -1,21 +1,23 @@
 from __future__ import annotations
 
-import math
 from typing import Dict
 
 import torch
 
+from llm_rl_final_proj.models.load import PolicyModel
+from llm_rl_final_proj.rl.base import RLAlgorithm
+from llm_rl_final_proj.rollout.rollout_buffer import RolloutBatch
+
+#additional imports needed
 from llm_rl_final_proj.models.logprobs import (
     approx_kl_from_logprobs,
     compute_per_token_logprobs,
     masked_mean,
     masked_mean_per_row,
 )
-from llm_rl_final_proj.rl.base import RLAlgorithm
-from llm_rl_final_proj.rollout.rollout_buffer import RolloutBatch, iter_minibatches
+from llm_rl_final_proj.rollout.rollout_buffer import iter_minibatches
 from llm_rl_final_proj.utils.torch_utils import clip_grad_norm_
-
-
+import math
 class GSPO(RLAlgorithm):
     """Sequence-level clipped surrogate using geometric-mean likelihood ratios."""
 
@@ -23,11 +25,15 @@ class GSPO(RLAlgorithm):
 
     def update(
         self,
-        model: torch.nn.Module,
+        model: PolicyModel,
         optimizer: torch.optim.Optimizer,
         rollout: RolloutBatch,
         grad_accum_steps: int = 1,
     ) -> Dict[str, float]:
+
+        # TODO(student): implement GSPO.
+        # The main change relative to GRPO is that you should aggregate token log-ratios into
+        # one sequence-level ratio before applying PPO-style clipping.
         cfg = self.cfg
         model.train()
         model.config.use_cache = False

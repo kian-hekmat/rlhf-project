@@ -3,9 +3,11 @@ from __future__ import annotations
 import torch
 import torch.nn.functional as F
 
+from llm_rl_final_proj.models.load import PolicyModel
+
 
 def compute_per_token_logprobs(
-    model: torch.nn.Module,
+    model: PolicyModel,
     input_ids: torch.Tensor,
     attention_mask: torch.Tensor,
     *,
@@ -13,12 +15,16 @@ def compute_per_token_logprobs(
 ) -> torch.Tensor:
     """Returns log p(x_t | x_<t) for t in [1, L-1]. Shape: [B, L-1]."""
     with torch.set_grad_enabled(enable_grad):
-        logits = model(input_ids=input_ids, attention_mask=attention_mask, use_cache=False).logits
-        shift_logits = logits[:, :-1, :].contiguous()
-        shift_labels = input_ids[:, 1:].contiguous()
-        B, T, V = shift_logits.shape
-        log_probs = -F.cross_entropy(shift_logits.view(B * T, V), shift_labels.view(B * T), reduction="none")
-        return log_probs.view(B, T)
+        # TODO(student): run the causal LM, align logits with the next-token targets,
+        # and return per-token log-probabilities of the observed tokens.
+        # Hint: use F.cross_entropy with reduction='none' for memory efficiency.
+        with torch.set_grad_enabled(enable_grad):
+            logits = model(input_ids=input_ids, attention_mask=attention_mask, use_cache=False).logits
+            shift_logits = logits[:, :-1, :].contiguous()
+            shift_labels = input_ids[:, 1:].contiguous()
+            B, T, V = shift_logits.shape
+            log_probs = -F.cross_entropy(shift_logits.view(B * T, V), shift_labels.view(B * T), reduction="none")
+            return log_probs.view(B, T)
 
 
 def build_completion_mask(
@@ -29,6 +35,8 @@ def build_completion_mask(
 ) -> torch.Tensor:
     """Mask over per-token positions [B, L-1], selecting completion tokens only."""
     del pad_token_id
+    # TODO(student): build a float mask of shape [B, L-1] that selects only completion tokens.
+    # Be careful about the one-token shift between logits[:, :-1] and input_ids[:, 1:].
     B, L = input_ids.shape
     positions = torch.arange(L - 1, device=input_ids.device).unsqueeze(0).expand(B, -1)
     comp_mask = (positions >= prompt_input_len - 1).float()
@@ -60,6 +68,9 @@ def approx_kl_from_logprobs(
     Uses estimator: exp(delta) - delta - 1 where delta = log p_ref(a) - log p_new(a).
     """
     del eps, log_ratio_clip
+    # TODO(student): implement the sampled-token KL proxy used throughout the codebase.
+    # You should mask out non-completion positions and return a scalar batch mean.
+
     delta = ref_logprobs - new_logprobs
     kl_proxy = torch.exp(delta) - delta - 1.0
     return masked_mean(kl_proxy, mask)
